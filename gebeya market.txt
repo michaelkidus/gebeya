@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="am" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gebeya Ethiopia - ገበያ ኢትዮጵያ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans Ethiopic', sans-serif;
+        }
+        
+        .orange-gradient {
+            background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);
+        }
+        
+        .listing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.2);
+        }
+        
+        .amharic-font {
+            font-family: 'Noto Sans Ethiopic', sans-serif;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #fff7ed;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border-radius: 4px;
+        }
+        
+        .trolley-icon {
+            position: relative;
+        }
+        
+        .trolley-icon::after {
+            content: "ገበያ";
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #f97316;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #555;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
+        
+        .form-submit {
+            background-color: #f97316;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .form-submit:hover {
+            background-color: #ea580c;
+        }
+        
+        .form-toggle {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+        }
+        
+        .form-toggle a {
+            color: #f97316;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Image upload preview */
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        /* Ad listing styles */
+        .ad-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .status-sold {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        /* My Ads section */
+        .my-ads-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .my-ads-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .my-ads-tab.active {
+            border-bottom-color: #f97316;
+            color: #f97316;
+            font-weight: 600;
+        }
+        
+        /* Ad actions */
+        .ad-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .ad-action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .edit-btn {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="orange-gradient text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="trolley-icon">
+                        <i class="fas fa-shopping-cart text-3xl mr-3"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold amharic-font">ገበያ ኢትዮጵያ</h1>
+                </div>
+                
+                <div class="relative w-full md:w-1/3">
+                    <input type="text" placeholder="ምርት ይፈልጉ..." 
+                           class="w-full py-2 px-4 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-300 amharic-font">
+                    <button class="absolute right-0 top-0 h-full px-4 text-orange-600 hover:text-orange-700">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center mt-4 md:mt-0 space-x-4">
+                    <button id="signupBtn" class="bg-white text-orange-600 px-4 py-2 rounded-full font-medium hover:bg-orange-50 transition amharic-font">
+                        <i class="fas fa-user-plus mr-2"></i> መመዝገቢያ
+                    </button>
+                    <button id="loginBtn" class="bg-orange-700 text-white px-4 py-2 rounded-full font-medium hover:bg-orange-800 transition amharic-font">
+                        <i class="fas fa-sign-in-alt mr-2"></i> ገብተው
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-center amharic-font">መመዝገቢያ</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName" class="amharic-font">ስም</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail" class="amharic-font">ኢሜይል</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPhone" class="amharic-font">ስልክ ቁጥር</label>
+                    <input type="tel" id="signupPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword" class="amharic-font">የይለፍ ቃል</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword" class="amharic-font">የይለፍ ቃል ያረጋግጡ</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                    <div id="signupPasswordError" class="error-message"></div>
+                </div>
+                <button type="submit" class="form-submit amharic-font">መዝግብ</button>
+            </form>
+            <div class="form-toggle">
+                <span class="amharic-font">ቀድሞ መለያ አለዎት? </span>
+                <a id="showLogin" class="amharic-font">ግባ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-center amharic-font">ገብተው</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail" class="amharic-font">ኢሜይል</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="amharic-font">የይለፍ ቃል</label>
+                    <input type="password" id="loginPassword" required>
+                    <div id="loginError" class="error-message"></div>
+                </div>
+                <button type="submit" class="form-submit amharic-font">ግባ</button>
+            </form>
+            <div class="form-toggle">
+                <span class="amharic-font">መለያ የለዎትም? </span>
+                <a id="showSignup" class="amharic-font">መመዝገቢያ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Ad Modal -->
+    <div id="createAdModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-center amharic-font">አዲስ ማስታወቂያ ያስገቡ</h2>
+            <form id="createAdForm">
+                <div class="form-group">
+                    <label for="adTitle" class="amharic-font">ርዕስ</label>
+                    <input type="text" id="adTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="adCategory" class="amharic-font">ምድብ</label>
+                    <select id="adCategory" required>
+                        <option value="">ምድብ ይምረጡ</option>
+                        <option value="cars">መኪናዎች</option>
+                        <option value="property">ንብረት</option>
+                        <option value="phones">ስልኮች</option>
+                        <option value="computers">ኮምፒውተር</option>
+                        <option value="clothing">ልብሶች</option>
+                        <option value="jobs">ስራ</option>
+                        <option value="animals">እንስሳት</option>
+                        <option value="other">ሌሎች</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adPrice" class="amharic-font">ዋጋ (ብር)</label>
+                    <input type="number" id="adPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="adLocation" class="amharic-font">ቦታ</label>
+                    <input type="text" id="adLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="adDescription" class="amharic-font">መግለጫ</label>
+                    <textarea id="adDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="adImages" class="amharic-font">ምስሎች (ከፍተኛ 4)</label>
+                    <input type="file" id="adImages" multiple accept="image/*">
+                    <div id="imagePreview" class="image-preview-container"></div>
+                </div>
+                <button type="submit" class="form-submit amharic-font">ማስታወቂያ ያስገቡ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Profile Dropdown -->
+    <div id="userDropdown" class="hidden absolute right-4 top-16 bg-white shadow-lg rounded-md z-50 w-48">
+        <div class="px-4 py-3 border-b">
+            <p id="userName" class="text-sm font-medium text-gray-900"></p>
+            <p id="userEmail" class="text-xs text-gray-500 truncate"></p>
+        </div>
+        <div class="py-1">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 amharic-font">መገለጫ</a>
+            <a href="#" id="myAdsBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 amharic-font">ማስታወቂያዎቼ</a>
+            <a href="#" id="createAdBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 amharic-font">ማስታወቂያ ያስገቡ</a>
+        </div>
+        <div class="py-1 border-t">
+            <button id="logoutBtn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 amharic-font">ውጣ</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex overflow-x-auto py-3 space-x-6 hide-scrollbar amharic-font">
+                <a href="#" class="whitespace-nowrap text-orange-600 font-medium border-b-2 border-orange-600 pb-1">
+                    <i class="fas fa-home mr-1"></i> ዋና
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-car mr-1"></i> መኪናዎች
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-home mr-1"></i> �ንብረት
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-mobile-alt mr-1"></i> ቴክኖሎጂ
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-tshirt mr-1"></i> ልብስ
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-briefcase mr-1"></i> ስራ
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-paw mr-1"></i> እንስሳት
+                </a>
+                <a href="#" class="whitespace-nowrap text-gray-600 hover:text-orange-600">
+                    <i class="fas fa-ellipsis-h mr-1"></i> ሌሎች
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- My Ads Section (hidden by default) -->
+        <section id="myAdsSection" class="hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 amharic-font">የእኔ ማስታወቂያዎች</h2>
+                <button id="createNewAdBtn" class="bg-orange-600 text-white px-4 py-2 rounded-full font-medium hover:bg-orange-700 transition amharic-font">
+                    <i class="fas fa-plus mr-2"></i> አዲስ ማስታወቂያ
+                </button>
+            </div>
+            
+            <div class="my-ads-tabs">
+                <div class="my-ads-tab active" data-tab="active">ንቁ</div>
+                <div class="my-ads-tab" data-tab="pending">በመጠባበቅ ላይ</div>
+                <div class="my-ads-tab" data-tab="sold">የተሸጡ</div>
+            </div>
+            
+            <div id="activeAds" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Active ads will be displayed here -->
+            </div>
+            
+            <div id="pendingAds" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- Pending ads will be displayed here -->
+            </div>
+            
+            <div id="soldAds" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- Sold ads will be displayed here -->
+            </div>
+        </section>
+        
+        <!-- Regular Content (shown by default) -->
+        <section id="regularContent">
+            <!-- Hero Section -->
+            <section class="orange-gradient text-white py-12 rounded-lg mb-8">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4 amharic-font">በኢትዮጵያ ውስጥ ያሉ ምርቶችን ይግዙ ይሸጡ!</h2>
+                    <p class="text-xl mb-6 amharic-font">አሁን በስልክዎ ላይ ይግዙ ይሸጡ!</p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button id="postAdBtn" class="bg-white text-orange-600 px-6 py-3 rounded-full font-bold hover:bg-orange-50 transition amharic-font">
+                            <i class="fas fa-plus-circle mr-2"></i> ማስታወቂያ ያስገቡ
+                        </button>
+                        <button class="bg-orange-700 text-white px-6 py-3 rounded-full font-bold hover:bg-orange-800 transition amharic-font">
+                            <i class="fas fa-search mr-2"></i> ምርቶችን ይፈልጉ
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="py-12 bg-white rounded-lg mb-8">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-2xl font-bold mb-8 text-center text-gray-800 amharic-font">የምርት ምድቦች</h2>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        <!-- Category 1 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-car text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">መኪናዎች</h3>
+                        </div>
+                        
+                        <!-- Category 2 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-home text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">ንብረት</h3>
+                        </div>
+                        
+                        <!-- Category 3 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-mobile-alt text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">ስልኮች</h3>
+                        </div>
+                        
+                        <!-- Category 4 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-laptop text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">ኮምፒውተር</h3>
+                        </div>
+                        
+                        <!-- Category 5 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-tshirt text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">ልብሶች</h3>
+                        </div>
+                        
+                        <!-- Category 6 -->
+                        <div class="category-card bg-white rounded-lg shadow-md p-4 text-center transition duration-300 cursor-pointer border border-orange-100">
+                            <div class="bg-orange-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-briefcase text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-medium text-gray-800 amharic-font">ስራ</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Listings -->
+            <section class="py-12 bg-gray-50 rounded-lg mb-8">
+                <div class="container mx-auto px-4">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 amharic-font">የተለዩ ምርቶች</h2>
+                        <a href="#" class="text-orange-600 hover:text-orange-700 font-medium amharic-font">
+                            ሁሉንም ይመልከቱ <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    
+                    <div id="featuredAds" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Listing 1 -->
+                        <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                     alt="Car" class="w-full h-48 object-cover">
+                                <span class="ad-status status-active">ንቁ</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">ቶዮታ ላንድ ክሩዘር</h3>
+                                <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ቦሌ</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-orange-600 amharic-font">1,200,000 ብር</span>
+                                    <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 245</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Listing 2 -->
+                        <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                     alt="House" class="w-full h-48 object-cover">
+                                <span class="ad-status status-active">ንቁ</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">4 መኝታ �ቤት ያለው ቪላ</h3>
+                                <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ለሚ ከተማ</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-orange-600 amharic-font">4,500,000 ብር</span>
+                                    <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 189</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Listing 3 -->
+                        <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                     alt="Phone" class="w-full h-48 object-cover">
+                                <span class="ad-status status-active">ንቁ</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">አይፎን 13 ፕሮ</h3>
+                                <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ስማርት �ሱቅ</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-orange-600 amharic-font">32,000 ብር</span>
+                                    <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 312</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Listing 4 -->
+                        <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                     alt="Job" class="w-full h-48 object-cover">
+                                <span class="ad-status status-active">ንቁ</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">ሶፍትዌር ኢንጂነር</h3>
+                                <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ቴክ ኩባንያ</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-orange-600 amharic-font">25,000 ብር/ወር</span>
+                                    <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 156</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section class="py-12 bg-white rounded-lg mb-8">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-2xl font-bold mb-8 text-center text-gray-800 amharic-font">እንዴት ይሰራል?</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Step 1 -->
+                        <div class="text-center">
+                            <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-plus text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-800 amharic-font">1. መለያ ይፍጠሩ</h3>
+                            <p class="text-gray-600 amharic-font">በነፃ መለያ ይፍጠሩ ወይም ይግቡ</p>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="text-center">
+                            <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-ad text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-800 amharic-font">2. ማስታወቂያ ያስገቡ</h3>
+                            <p class="text-gray-600 amharic-font">የሚሸጡትን ምርት ያስቀምጡ</p>
+                        </div>
+                        
+                        <!-- Step 3 -->
+                        <div class="text-center">
+                            <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-handshake text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-800 amharic-font">3. ይሸጡ/ይግዙ</h3>
+                            <p class="text-gray-600 amharic-font">ከገዢዎች ወይም ከሻጮች ጋር ያግኙ</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mobile App Banner -->
+            <section class="py-12 bg-orange-600 text-white rounded-lg">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
+                            <h2 class="text-3xl font-bold mb-4 amharic-font">ገበያ �ኢትዮጵያ መተግበሪያ</h2>
+                            <p class="text-xl mb-6 amharic-font">አሁን በስልክዎ ላይ ይግዙ ይሸጡ!</p>
+                            <div class="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                                <button class="bg-white text-orange-600 px-6 py-3 rounded-lg font-bold hover:bg-orange-50 transition flex items-center justify-center">
+                                    <i class="fab fa-google-play text-2xl mr-2"></i>
+                                    <div class="text-left">
+                                        <div class="text-xs">GET IT ON</div>
+                                        <div class="text-lg">Google Play</div>
+                                    </div>
+                                </button>
+                                <button class="bg-black text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-800 transition flex items-center justify-center">
+                                    <i class="fab fa-apple text-2xl mr-2"></i>
+                                    <div class="text-left">
+                                        <div class="text-xs">Download on the</div>
+                        <div class="text-lg">App Store</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+            <img src="https://cdn.pixabay.com/photo/2017/01/22/12/07/imac-1999636_1280.png" alt="Mobile App" class="w-64 h-auto">
+        </div>
+    </div>
+</div>
+</section>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- About -->
+            <div>
+                <h3 class="text-xl font-bold mb-4 amharic-font">ስለ ገበያ ኢትዮጵያ</h3>
+                <p class="text-gray-400 amharic-font">ገበያ ኢትዮጵያ በኢትዮጵያ ውስጥ ለሚገኙ ሰዎች የሚያገለግል የመስመር ላይ የገበያ ምርቶች መድረክ ነው።</p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-xl font-bold mb-4 amharic-font">ፈጣን አገናኞች</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ዋና</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ስለ እኛ</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ማስታወቂያ ያስገቡ</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ደንቦች</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">እንዴት ይሰራል?</a></li>
+                </ul>
+            </div>
+            
+            <!-- Categories -->
+            <div>
+                <h3 class="text-xl font-bold mb-4 amharic-font">ምድቦች</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">መኪናዎች</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ንብረት</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ስልኮች</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ኮምፒውተር</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-orange-400 transition amharic-font">ስራ</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h3 class="text-xl font-bold mb-4 amharic-font">አግኙን</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2 text-orange-400"></i>
+                        <span class="text-gray-400 amharic-font">አዲስ አበባ, ኢትዮጵያ</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone-alt mr-2 text-orange-400"></i>
+                        <span class="text-gray-400">+251 912 345 678</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope mr-2 text-orange-400"></i>
+                        <span class="text-gray-400">info@gebeyaethiopia.com</span>
+                    </li>
+                </ul>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" class="text-gray-400 hover:text-orange-400 transition">
+                        <i class="fab fa-facebook-f text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-orange-400 transition">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-orange-400 transition">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-orange-400 transition">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 amharic-font">
+            <p>© 2023 ገበያ ኢትዮጵያ. ሁሉም መብቶች የተጠበቁ ናቸው.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // DOM Elements
+    const signupBtn = document.getElementById('signupBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupModal = document.getElementById('signupModal');
+    const loginModal = document.getElementById('loginModal');
+    const createAdModal = document.getElementById('createAdModal');
+    const showLogin = document.getElementById('showLogin');
+    const showSignup = document.getElementById('showSignup');
+    const closeBtns = document.querySelectorAll('.close');
+    const signupForm = document.getElementById('signupForm');
+    const loginForm = document.getElementById('loginForm');
+    const createAdForm = document.getElementById('createAdForm');
+    const userDropdown = document.getElementById('userDropdown');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const createAdBtn = document.getElementById('createAdBtn');
+    const myAdsBtn = document.getElementById('myAdsBtn');
+    const postAdBtn = document.getElementById('postAdBtn');
+    const createNewAdBtn = document.getElementById('createNewAdBtn');
+    const myAdsSection = document.getElementById('myAdsSection');
+    const regularContent = document.getElementById('regularContent');
+    const activeAdsTab = document.querySelector('.my-ads-tab[data-tab="active"]');
+    const pendingAdsTab = document.querySelector('.my-ads-tab[data-tab="pending"]');
+    const soldAdsTab = document.querySelector('.my-ads-tab[data-tab="sold"]');
+    const activeAdsContainer = document.getElementById('activeAds');
+    const pendingAdsContainer = document.getElementById('pendingAds');
+    const soldAdsContainer = document.getElementById('soldAds');
+    const adImagesInput = document.getElementById('adImages');
+    const imagePreviewContainer = document.getElementById('imagePreview');
+    const featuredAdsContainer = document.getElementById('featuredAds');
+    
+    // Check if user is logged in
+    let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    
+    // Initialize ads data if not exists
+    if (!localStorage.getItem('ads')) {
+        localStorage.setItem('ads', JSON.stringify([]));
+    }
+    
+    // Update UI based on login status
+    function updateUI() {
+        if (isLoggedIn && currentUser) {
+            // Hide login/signup buttons
+            signupBtn.style.display = 'none';
+            loginBtn.style.display = 'none';
+            
+            // Show user profile button
+            const userProfileBtn = document.createElement('button');
+            userProfileBtn.id = 'userProfileBtn';
+            userProfileBtn.className = 'flex items-center space-x-2 bg-white text-orange-600 px-4 py-2 rounded-full font-medium hover:bg-orange-50 transition';
+            userProfileBtn.innerHTML = `
+                <i class="fas fa-user-circle text-xl"></i>
+                <span class="amharic-font">${currentUser.name.split(' ')[0]}</span>
+            `;
+            
+            // Insert before the parent div
+            const parentDiv = loginBtn.parentNode;
+            parentDiv.insertBefore(userProfileBtn, parentDiv.firstChild);
+            
+            // Add click event for dropdown
+            userProfileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                userDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userProfileBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+            
+            // Enable post ad button
+            postAdBtn.addEventListener('click', function() {
+                openModal(createAdModal);
+            });
+        } else {
+            // Show login/signup buttons
+            signupBtn.style.display = 'block';
+            loginBtn.style.display = 'block';
+            
+            // Remove user profile button if exists
+            const existingProfileBtn = document.getElementById('userProfileBtn');
+            if (existingProfileBtn) {
+                existingProfileBtn.remove();
+            }
+            
+            // Disable post ad button and show login modal instead
+            postAdBtn.addEventListener('click', function() {
+                openModal(loginModal);
+            });
+        }
+        
+        // Load featured ads
+        loadFeaturedAds();
+    }
+    
+    // Initialize UI
+    updateUI();
+    
+    // Modal open/close functions
+    function openModal(modal) {
+        modal.style.display = 'block';
+    }
+    
+    function closeModal(modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Event listeners for buttons
+    signupBtn.addEventListener('click', () => openModal(signupModal));
+    loginBtn.addEventListener('click', () => openModal(loginModal));
+    
+    showLogin.addEventListener('click', () => {
+        closeModal(signupModal);
+        openModal(loginModal);
+    });
+    
+    showSignup.addEventListener('click', () => {
+        closeModal(loginModal);
+        openModal(signupModal);
+    });
+    
+    // Close modals when clicking X
+    closeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            closeModal(modal);
+        });
+    });
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === signupModal) {
+            closeModal(signupModal);
+        }
+        if (e.target === loginModal) {
+            closeModal(loginModal);
+        }
+        if (e.target === createAdModal) {
+            closeModal(createAdModal);
+        }
+    });
+    
+    // Signup form submission
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const phone = document.getElementById('signupPhone').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('signupConfirmPassword').value;
+        const errorElement = document.getElementById('signupPasswordError');
+        
+        // Validate password match
+        if (password !== confirmPassword) {
+            errorElement.textContent = 'የይለፍ ቃላት አይመሳሰሉም';
+            return;
+        } else {
+            errorElement.textContent = '';
+        }
+        
+        // Create user object
+        const user = {
+            name,
+            email,
+            phone,
+            password // Note: In a real app, you would hash the password before storing
+        };
+        
+        // Save user to localStorage (simulating database)
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('isLoggedIn', 'true');
+        isLoggedIn = true;
+        currentUser = user;
+        
+        // Update UI
+        updateUI();
+        
+        // Close modal and reset form
+        closeModal(signupModal);
+        signupForm.reset();
+        
+        // Show success message
+        alert('በተሳካ ሁኔታ ተመዝግበዋል!');
+    });
+    
+    // Login form submission
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorElement = document.getElementById('loginError');
+        
+        // Get user from localStorage (simulating database)
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        
+        // Check credentials
+        if (user && user.email === email && user.password === password) {
+            // Login successful
+            localStorage.setItem('isLoggedIn', 'true');
+            isLoggedIn = true;
+            currentUser = user;
+            
+            // Update UI
+            updateUI();
+            
+            // Close modal and reset form
+            closeModal(loginModal);
+            loginForm.reset();
+        } else {
+            // Login failed
+            errorElement.textContent = 'ያልሆነ ኢሜይል ወይም የይለፍ ቃል';
+        }
+    });
+    
+    // Logout functionality
+    logoutBtn.addEventListener('click', function() {
+        localStorage.setItem('isLoggedIn', 'false');
+        isLoggedIn = false;
+        currentUser = null;
+        updateUI();
+        userDropdown.classList.add('hidden');
+        
+        // Show regular content
+        myAdsSection.classList.add('hidden');
+        regularContent.classList.remove('hidden');
+    });
+    
+    // Create Ad button in dropdown
+    createAdBtn.addEventListener('click', function() {
+        userDropdown.classList.add('hidden');
+        openModal(createAdModal);
+    });
+    
+    // My Ads button in dropdown
+    myAdsBtn.addEventListener('click', function() {
+        userDropdown.classList.add('hidden');
+        showMyAds();
+    });
+    
+    // Create New Ad button in My Ads section
+    createNewAdBtn.addEventListener('click', function() {
+        openModal(createAdModal);
+    });
+    
+    // Image upload preview
+    adImagesInput.addEventListener('change', function() {
+        imagePreviewContainer.innerHTML = '';
+        const files = this.files;
+        
+        if (files.length > 4) {
+            alert('ከፍተኛ 4 �ምስሎች ብቻ መምረጥ ይችላሉ!');
+            this.value = '';
+            return;
+        }
+        
+        for (let i = 0; i < Math.min(files.length, 4); i++) {
+            const file = files[i];
+            if (file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'image-preview';
+                    imagePreviewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+    
+    // Create Ad form submission
+    createAdForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('adTitle').value;
+        const category = document.getElementById('adCategory').value;
+        const price = document.getElementById('adPrice').value;
+        const location = document.getElementById('adLocation').value;
+        const description = document.getElementById('adDescription').value;
+        const images = document.getElementById('adImages').files;
+        
+        // Create ad object
+        const ad = {
+            id: Date.now().toString(),
+            userId: currentUser.email,
+            title,
+            category,
+            price,
+            location,
+            description,
+            images: [],
+            status: 'active', // 'active', 'pending', 'sold'
+            views: 0,
+            createdAt: new Date().toISOString()
+        };
+        
+        // Convert images to base64 (simulating upload)
+        if (images.length > 0) {
+            const imagePromises = [];
+            
+            for (let i = 0; i < Math.min(images.length, 4); i++) {
+                const file = images[i];
+                if (file.type.match('image.*')) {
+                    const promise = new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve(e.target.result);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                    imagePromises.push(promise);
+                }
+            }
+            
+            Promise.all(imagePromises).then(imageData => {
+                ad.images = imageData;
+                saveAd(ad);
+            });
+        } else {
+            saveAd(ad);
+        }
+    });
+    
+    // Save ad to localStorage
+    function saveAd(ad) {
+        const ads = JSON.parse(localStorage.getItem('ads'));
+        ads.push(ad);
+        localStorage.setItem('ads', JSON.stringify(ads));
+        
+        // Close modal and reset form
+        closeModal(createAdModal);
+        createAdForm.reset();
+        imagePreviewContainer.innerHTML = '';
+        
+        // Show success message
+        alert('ማስታወቂያዎ በተሳካ ሁኔታ ተለጠፈ!');
+        
+        // Refresh featured ads and My Ads if visible
+        loadFeaturedAds();
+        
+        if (!myAdsSection.classList.contains('hidden')) {
+            loadUserAds();
+        }
+    }
+    
+    // Show My Ads section
+    function showMyAds() {
+        if (!isLoggedIn) {
+            openModal(loginModal);
+            return;
+        }
+        
+        // Hide regular content and show My Ads
+        regularContent.classList.add('hidden');
+        myAdsSection.classList.remove('hidden');
+        
+        // Load user's ads
+        loadUserAds();
+    }
+    
+    // Load user's ads
+    function loadUserAds() {
+        const ads = JSON.parse(localStorage.getItem('ads'));
+        const userAds = ads.filter(ad => ad.userId === currentUser.email);
+        
+        // Clear containers
+        activeAdsContainer.innerHTML = '';
+        pendingAdsContainer.innerHTML = '';
+        soldAdsContainer.innerHTML = '';
+        
+        // Categorize ads
+        const activeAds = userAds.filter(ad => ad.status === 'active');
+        const pendingAds = userAds.filter(ad => ad.status === 'pending');
+        const soldAds = userAds.filter(ad => ad.status === 'sold');
+        
+        // Display active ads
+        if (activeAds.length > 0) {
+            activeAds.forEach(ad => {
+                activeAdsContainer.appendChild(createAdCard(ad));
+            });
+        } else {
+            activeAdsContainer.innerHTML = '<p class="text-gray-500 amharic-font">ምንም ንቁ ማስታወቂያዎች የሉም</p>';
+        }
+        
+        // Display pending ads
+        if (pendingAds.length > 0) {
+            pendingAds.forEach(ad => {
+                pendingAdsContainer.appendChild(createAdCard(ad));
+            });
+        } else {
+            pendingAdsContainer.innerHTML = '<p class="text-gray-500 amharic-font">ምንም በመጠባበቅ ላይ ያሉ ማስታወቂያዎች የሉም</p>';
+        }
+        
+        // Display sold ads
+        if (soldAds.length > 0) {
+            soldAds.forEach(ad => {
+                soldAdsContainer.appendChild(createAdCard(ad));
+            });
+        } else {
+            soldAdsContainer.innerHTML = '<p class="text-gray-500 amharic-font">ምንም የተሸጡ ማስታወቂያዎች የሉም</p>';
+        }
+    }
+    
+    // Load featured ads
+    function loadFeaturedAds() {
+        const ads = JSON.parse(localStorage.getItem('ads'));
+        const featuredAds = ads.filter(ad => ad.status === 'active').slice(0, 4); // Get first 4 active ads
+        
+        // Clear container
+        featuredAdsContainer.innerHTML = '';
+        
+        // Display featured ads
+        if (featuredAds.length > 0) {
+            featuredAds.forEach(ad => {
+                featuredAdsContainer.appendChild(createAdCard(ad));
+            });
+        } else {
+            // Show default ads if no ads exist
+            featuredAdsContainer.innerHTML = `
+                <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                             alt="Car" class="w-full h-48 object-cover">
+                        <span class="ad-status status-active">ንቁ</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">ቶዮታ ላንድ ክሩዘር</h3>
+                        <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ቦሌ</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-orange-600 amharic-font">1,200,000 ብር</span>
+                            <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 245</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                             alt="House" class="w-full h-48 object-cover">
+                        <span class="ad-status status-active">ንቁ</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">4 መኝታ �ቤት ያለው ቪላ</h3>
+                        <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ለሚ �ከተማ</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-orange-600 amharic-font">4,500,000 ብር</span>
+                            <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 189</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                             alt="Phone" class="w-full h-48 object-cover">
+                        <span class="ad-status status-active">ንቁ</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">አይፎን 13 ፕሮ</h3>
+                        <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ስማርት �ሱቅ</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-orange-600 amharic-font">32,000 ብር</span>
+                            <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 312</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                             alt="Job" class="w-full h-48 object-cover">
+                        <span class="ad-status status-active">ንቁ</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">ሶፍትዌር �ኢንጂነር</h3>
+                        <p class="text-gray-600 text-sm mb-2 amharic-font">አዲስ አበባ, ቴክ ኩባንያ</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-orange-600 amharic-font">25,000 ብር/ወር</span>
+                            <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> 156</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    // Create ad card element
+    function createAdCard(ad) {
+        const card = document.createElement('div');
+        card.className = 'listing-card bg-white rounded-lg shadow-md overflow-hidden transition duration-300';
+        
+        let statusClass = 'status-active';
+        if (ad.status === 'pending') {
+            statusClass = 'status-pending';
+        } else if (ad.status === 'sold') {
+            statusClass = 'status-sold';
+        }
+        
+        const statusText = ad.status === 'active' ? 'ንቁ' : 
+                          ad.status === 'pending' ? 'በመጠባበቅ ላይ' : 'የተሸጠ';
+        
+        card.innerHTML = `
+            <div class="relative">
+                ${ad.images.length > 0 ? 
+                    `<img src="${ad.images[0]}" alt="${ad.title}" class="w-full h-48 object-cover">` : 
+                    `<div class="w-full h-48 bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                    </div>`}
+                <span class="ad-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-gray-800 mb-1 amharic-font">${ad.title}</h3>
+                <p class="text-gray-600 text-sm mb-2 amharic-font">${ad.location}</p>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-orange-600 amharic-font">${ad.price} ብር</span>
+                    <span class="text-gray-500 text-sm amharic-font"><i class="far fa-eye mr-1"></i> ${ad.views}</span>
+                </div>
+                ${myAdsSection.contains(card) ? `
+                <div class="ad-actions">
+                    <button class="ad-action-btn edit-btn amharic-font" data-id="${ad.id}">አርትዕ</button>
+                    <button class="ad-action-btn delete-btn amharic-font" data-id="${ad.id}">ሰርዝ</button>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        return card;
+    }
+    
+    // Tab switching for My Ads
+    activeAdsTab.addEventListener('click', function() {
+        document.querySelectorAll('.my-ads-tab').forEach(tab => tab.classList.remove('active'));
+        this.classList.add('active');
+        activeAdsContainer.classList.remove('hidden');
+        pendingAdsContainer.classList.add('hidden');
+        soldAdsContainer.classList.add('hidden');
+    });
+    
+    pendingAdsTab.addEventListener('click', function() {
+        document.querySelectorAll('.my-ads-tab').forEach(tab => tab.classList.remove('active'));
+        this.classList.add('active');
+        activeAdsContainer.classList.add('hidden');
+        pendingAdsContainer.classList.remove('hidden');
+        soldAdsContainer.classList.add('hidden');
+    });
+    
+    soldAdsTab.addEventListener('click', function() {
+        document.querySelectorAll('.my-ads-tab').forEach(tab => tab.classList.remove('active'));
+        this.classList.add('active');
+        activeAdsContainer.classList.add('hidden');
+        pendingAdsContainer.classList.add('hidden');
+        soldAdsContainer.classList.remove('hidden');
+    });
+    
+    // Simple JavaScript for demonstration
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to category cards on hover
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s ease';
+            });
+        });
+        
+        // Add animation to listing cards on hover
+        const listingCards = document.querySelectorAll('.listing-card');
+        listingCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s ease';
+            });
+        });
+    });
+</script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=michaelki/gebeya" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
